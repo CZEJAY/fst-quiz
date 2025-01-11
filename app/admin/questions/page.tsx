@@ -6,7 +6,6 @@ import {
   Question,
   QuestionsTable,
 } from "@/components/admin/questions/questions-table";
-import { RouteErrorComponent } from "@/components/Errors/error-component";
 import React from "react";
 import CreateQuestion from "./_components/create-question";
 
@@ -14,7 +13,7 @@ const page = async () => {
   // @ts-ignore
   const { error, questions } = await getQuestions();
   if (error) {
-    return <RouteErrorComponent info={error} error={error} />;
+    return <div className="">Something went wrong</div>;
   }
   const formattedQuestions: Question[] = questions.map(
     (question: QuestionWithRelations) => ({
