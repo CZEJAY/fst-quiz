@@ -16,6 +16,7 @@ const page = async ({ params: { ID } }: { params: { ID: string } }) => {
     if ("error" in result) {
       return <RouteErrorComponent error={result.error} info={result.error} />;
     }
+    // @ts-ignore
     initialData = {
       ...result.question,
       //   @ts-ignore
