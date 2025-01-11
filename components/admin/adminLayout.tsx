@@ -18,7 +18,7 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   return (
     <SidebarProvider className="">
-      <div className="flex  min-h-screen w-full">
+      <div className="flex z-[99999] min-h-screen w-full">
         <AppSidebar />
         <SidebarInset>
           <div className="hidden md:block ">

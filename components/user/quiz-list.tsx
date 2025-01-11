@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { QuizCard } from "./quiz-card";
 import { QuizConfigModal } from "../mods/quiz-config-modal";
-import { Quiz } from "@prisma/client";
 import { getQuizzes, QuizWithRelations } from "@/actions/quiz-actions";
 import { QuizCardSkeleton } from "./quiz-card-skeleton";
 import { DashboardHeader } from "./dashboard-header";
@@ -33,10 +32,16 @@ export function QuizList() {
 
   if (loading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 w-full">
-        {[...Array(6)].map((_, index) => (
-          <QuizCardSkeleton key={index} />
-        ))}
+      <div className="w-full">
+        <DashboardHeader
+          heading="Loading Quizzes"
+          text="Please wait while we load up your quiz explorer."
+        />
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 w-full">
+          {[...Array(6)].map((_, index) => (
+            <QuizCardSkeleton key={index} />
+          ))}
+        </div>
       </div>
     );
   }
@@ -44,7 +49,7 @@ export function QuizList() {
   return (
     <div className="w-full gap-5 flex flex-col">
       <DashboardHeader
-        heading="Explore Quizzed"
+        heading="Explore Quizzes"
         text="View and choose any quiz to test your knowledge"
       />
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 w-full">

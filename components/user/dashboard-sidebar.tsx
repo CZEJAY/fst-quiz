@@ -37,7 +37,7 @@ const sidebarNavItems = [
     icon: LayoutDashboard,
   },
   {
-    title: "My Quizzes",
+    title: "Results",
     href: "/user/completed-quizzes",
     icon: FileQuestion,
   },
@@ -58,7 +58,7 @@ const sidebarNavItems = [
   },
   {
     title: "Settings",
-    href: "/user/settings",
+    href: "/user/profile",
     icon: Settings,
   },
 ];

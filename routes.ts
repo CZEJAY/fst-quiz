@@ -18,6 +18,17 @@ export const authRoutes = [
   "/auth/new-password",
 ];
 
+export const adminRoutes = [
+  "/admin",
+  "/admin/questions",
+  "/admin/quizzes",
+  "/admin/users",
+  "/admin/results",
+  "/admin/settings",
+  "/admin/caregories",
+  "/admin/learning",
+];
+
 /**
  * The prefix for API authentication routes
  * Routes that start with this prefix are used for API authentication purposes
