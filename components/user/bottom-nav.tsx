@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Home, BookOpen, User, BarChart } from "lucide-react";
+import { Home, BookOpen, User, BarChart, BookCheck } from "lucide-react";
 
 const navItems = [
   { icon: Home, label: "Home", path: "/user" },
-  { icon: BookOpen, label: "Quizzes", path: "/user/quizzes" },
-  { icon: BarChart, label: "Results", path: "/user/completed-quizzes" },
+  { icon: BarChart, label: "Leaders", path: "/user/leaderboard" },
+  { icon: BookCheck, label: "Results", path: "/user/completed-quizzes" },
   { icon: User, label: "Profile", path: "/user/profile" },
 ];
 
