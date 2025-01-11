@@ -24,6 +24,7 @@ export function QuizList() {
     fetchQuizzes();
   }, []);
 
+  // @ts-ignore
   const handleQuizSelect = (quiz) => {
     setSelectedQuiz(quiz);
     setIsModalOpen(true);

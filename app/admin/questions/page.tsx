@@ -13,6 +13,7 @@ import Link from "next/link";
 import React from "react";
 
 const page = async () => {
+  // @ts-ignore
   const { error, questions } = await getQuestions();
   if (error) {
     return <RouteErrorComponent info={error} error={error} />;

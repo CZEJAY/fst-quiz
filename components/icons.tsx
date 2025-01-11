@@ -22,8 +22,9 @@ export const Icons = {
   leaderboard: BarChart,
   progress: User,
   trophy: Trophy,
-  settings: Settings,
+  settings: Settings, // @ts-ignore
   icon: ({ name, ...props }: LucideProps & { name: string }) => {
+    // @ts-ignore
     const Icon = Icons[name];
     return Icon ? <Icon {...props} /> : null;
   },

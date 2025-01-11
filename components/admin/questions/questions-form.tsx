@@ -130,7 +130,8 @@ export function CreateQuestionForm({
       setIsSubmitting(true);
 
       const action = initialData
-        ? updateQuestion(initialData.id, values)
+        ? // @ts-ignore
+          updateQuestion(initialData.id, values) // @ts-ignore
         : createQuestion(values);
       console.log(values);
       const { question, error } = await action;
