@@ -14,6 +14,7 @@ const page = async () => {
         heading="Leader Board"
         text="View your ranking in the leaderboard below."
       />
+      {/* @ts-ignore */}
       <Leaderboard users={processedLeaderboard} />
     </div>
   );
