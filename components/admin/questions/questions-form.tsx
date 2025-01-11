@@ -65,7 +65,7 @@ const baseQuestionSchema = z.object({
 const multipleChoiceSchema = baseQuestionSchema.extend({
   type: z.literal("multiple-choice"),
   options: z.array(z.string()).min(4).max(4),
-  correctAnswer: z.string().min(0).max(3),
+  correctAnswer: z.string().min(1, "Correct option is required"),
 });
 
 const trueFalseSchema = baseQuestionSchema.extend({

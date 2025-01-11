@@ -6,6 +6,7 @@ import { QuizConfigModal } from "../mods/quiz-config-modal";
 import { Quiz } from "@prisma/client";
 import { getQuizzes, QuizWithRelations } from "@/actions/quiz-actions";
 import { QuizCardSkeleton } from "./quiz-card-skeleton";
+import { DashboardHeader } from "./dashboard-header";
 
 export function QuizList() {
   const [quizzes, setQuizzes] = useState<QuizWithRelations[]>([]);
@@ -41,17 +42,23 @@ export function QuizList() {
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 w-full">
-      {quizzes.map((quiz) => (
-        <QuizCard key={quiz.id} quiz={quiz} onSelect={handleQuizSelect} />
-      ))}
-      {selectedQuiz && (
-        <QuizConfigModal
-          quiz={selectedQuiz}
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-        />
-      )}
+    <div className="w-full gap-5 flex flex-col">
+      <DashboardHeader
+        heading="Explore Quizzed"
+        text="View and choose any quiz to test your knowledge"
+      />
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 w-full">
+        {quizzes.map((quiz) => (
+          <QuizCard key={quiz.id} quiz={quiz} onSelect={handleQuizSelect} />
+        ))}
+        {selectedQuiz && (
+          <QuizConfigModal
+            quiz={selectedQuiz}
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+          />
+        )}
+      </div>
     </div>
   );
 }

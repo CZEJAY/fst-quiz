@@ -1,16 +1,35 @@
 "use server";
 
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { Quiz, UserQuizResult } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
-export async function getUserQuizResults(userId: string) {
+export type UserResultAndRelation = UserQuizResult & {
+  quiz: Quiz;
+};
+
+export async function getUserQuizResults() {
   try {
+    const session = await auth();
+    if (!session?.user) {
+      return { error: "User not found" };
+    }
+    const user = await prisma.user.findUnique({
+      where: {
+        email: session?.user?.email as string,
+      },
+    });
+    if (!user) {
+      return { error: "User not found" };
+    }
     const results = await prisma.userQuizResult.findMany({
-      where: { userId },
+      where: { userId: user?.id },
       include: { quiz: true },
     });
     return { results };
   } catch (error) {
+    console.log(error);
     return { error: "Failed to fetch user quiz results" };
   }
 }

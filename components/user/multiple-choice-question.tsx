@@ -19,9 +19,9 @@ export function MultipleChoiceQuestion({
   return (
     <RadioGroup onValueChange={onAnswer} value={currentAnswer}>
       {question.options.map((option, index) => (
-        <div key={index} className="flex items-center space-x-2">
-          <RadioGroupItem value={option} id={`option-${index}`} />
-          <Label htmlFor={`option-${index}`}>{option}</Label>
+        <div key={option} className="flex items-center space-x-2">
+          <RadioGroupItem value={option} id={`option-${option}`} />
+          <Label htmlFor={`option-${option}`}>{option}</Label>
         </div>
       ))}
     </RadioGroup>

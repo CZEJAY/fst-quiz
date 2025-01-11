@@ -14,6 +14,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
+import {
+  getUserQuizResults,
+  UserResultAndRelation,
+} from "@/actions/user-quiz-result-actions";
+import { useSession } from "next-auth/react";
+import { UserQuizResult } from "@prisma/client";
+import { toast } from "sonner";
+import QuizPerformanceTracker from "@/components/user/QuizPerformanceTracker";
 
 interface CompletedQuiz {
   id: string;
@@ -24,37 +32,20 @@ interface CompletedQuiz {
 }
 
 export default function CompletedQuizzesPage() {
-  const [quizzes, setQuizzes] = useState<CompletedQuiz[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [quizzes, setQuizzes] = useState<UserResultAndRelation[]>([]);
+  const { data, status } = useSession();
+  const [loading, setLoading] = useState(status === "loading");
   const router = useRouter();
 
   useEffect(() => {
     const fetchCompletedQuizzes = async () => {
-      // In a real application, this would be an API call
-      const mockData: CompletedQuiz[] = [
-        {
-          id: "1",
-          title: "Math Quiz",
-          score: 8,
-          totalQuestions: 10,
-          completedAt: "2023-05-01T12:00:00Z",
-        },
-        {
-          id: "2",
-          title: "Science Quiz",
-          score: 7,
-          totalQuestions: 10,
-          completedAt: "2023-05-02T14:30:00Z",
-        },
-        {
-          id: "3",
-          title: "History Quiz",
-          score: 9,
-          totalQuestions: 10,
-          completedAt: "2023-05-03T10:15:00Z",
-        },
-      ];
-      setQuizzes(mockData);
+      const { error, results } = await getUserQuizResults();
+      if (error) {
+        toast.error("Something went wrong", {
+          description: error,
+        });
+      }
+      setQuizzes(results || []);
       setLoading(false);
     };
 
@@ -75,26 +66,29 @@ export default function CompletedQuizzesPage() {
 
   return (
     <DashboardShell>
+      <QuizPerformanceTracker results={quizzes} />
       <DashboardHeader
         heading="Completed Quizzes"
         text="View your quiz history and performance."
       />
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 mt-4 md:grid-cols-2 lg:grid-cols-3">
         {quizzes.map((quiz) => (
           <Card key={quiz.id} className="flex flex-col justify-between">
             <CardHeader>
-              <CardTitle>{quiz.title}</CardTitle>
+              <CardTitle>{quiz.quiz.title}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex justify-between items-center">
                 <Badge variant="secondary">{`${quiz.score}/${quiz.totalQuestions}`}</Badge>
                 <span className="text-sm text-muted-foreground">
-                  {new Date(quiz.completedAt).toLocaleDateString()}
+                  {new Date(quiz.completed).toLocaleDateString()}
                 </span>
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={() => router.push(`/quiz-result/${quiz.id}`)}>
+              <Button
+                onClick={() => router.push(`/user/quiz-result/${quiz.id}`)}
+              >
                 View Results
               </Button>
             </CardFooter>
