@@ -7,9 +7,6 @@ import {
   QuestionsTable,
 } from "@/components/admin/questions/questions-table";
 import { RouteErrorComponent } from "@/components/Errors/error-component";
-import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
-import Link from "next/link";
 import React from "react";
 import CreateQuestion from "./_components/create-question";
 
