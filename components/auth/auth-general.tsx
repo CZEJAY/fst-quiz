@@ -13,8 +13,8 @@ import {
 } from "@/components/ui/card";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
-import { signIn } from "@/auth";
 import { Bolt } from "lucide-react";
+import { signIn } from "next-auth/react";
 
 export default function AuthPage() {
   const [isLoading, setIsLoading] = useState(false);
