@@ -40,7 +40,7 @@ const LeaderboardCard = ({ rank, user }: { rank: number; user: User }) => {
     <div
       className={`p-4 ${bgColor} rounded-lg flex items-center justify-between space-x-4`}
     >
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-4 w-full">
         <div
           className={`flex items-center justify-center w-8 h-8 ${color} font-bold`}
         >
@@ -55,19 +55,23 @@ const LeaderboardCard = ({ rank, user }: { rank: number; user: User }) => {
           <AvatarFallback>{getInitials(user!.name)}</AvatarFallback>
         </Avatar>
         <div>
-          <p className="font-medium text-black">{user.name}</p>
-          <p className="text-sm text-gray-500">
+          <p className="font-medium text-sm line-clamp-1 text-black">
+            {user.name}
+          </p>
+          <p className="text-[9px] text-gray-500">
             {/* @ts-ignore */}
             {user.totalQuizzes} quizzes completed
           </p>
         </div>
       </div>
       <div className="text-right">
-        <p className="text-lg font-bold text-black">
+        <p className="lg:text-lg text-xs font-bold text-black">
           {/* @ts-ignore */}
           {user.averageScore.toFixed(1)}%
         </p>
-        <p className="text-sm text-gray-500">avg. score</p>
+        <p className="lg:text-sm text-[9px] line-clamp-1 text-gray-500">
+          avg. score
+        </p>
       </div>
     </div>
   );
