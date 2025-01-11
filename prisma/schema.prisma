@@ -1,0 +1,168 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserRole {
+  Admin
+  User
+}
+
+model User {
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  name           String?
+  email          String?          @unique
+  emailVerified  DateTime?
+  image          String?
+  role           UserRole         @default(User)
+  accounts       Account[]
+  sessions       Session[]
+  Authenticator  Authenticator[]
+  quizResults    UserQuizResult[]
+  createdQuizzes Quiz[]           @relation("CreatedBy")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.String
+  access_token      String? @db.String
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.String
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String   @db.ObjectId
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Authenticator {
+  credentialID         String  @id @map("_id")
+  userId               String  @db.ObjectId
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, credentialID])
+}
+
+enum QuizDifficulty {
+  easy
+  medium
+  hard
+}
+
+enum QuizStatus {
+  published
+  draft
+  archived
+}
+
+model Quiz {
+  id          String           @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  categoryId  String           @db.ObjectId
+  createdById String           @db.ObjectId
+  difficulty  QuizDifficulty
+  status      QuizStatus
+  questions   Question[]
+  results     UserQuizResult[]
+  category    Category         @relation(fields: [categoryId], references: [id])
+  createdBy   User             @relation("CreatedBy", fields: [createdById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Question {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  quizId         String   @db.ObjectId
+  text           String
+  type           String
+  options        String[]
+  correctAnswer  String
+  shuffleOptions Boolean  @default(false)
+  explanation    String?
+  points         Int      @default(1)
+  timeLimit      Int? // in seconds
+  quiz           Quiz     @relation(fields: [quizId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum CategoryStatus {
+  active
+  draft
+  archived
+}
+
+model Category {
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  name        String         @unique
+  description String?
+  status      CategoryStatus
+  quizzes     Quiz[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserQuizResult {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId             String   @db.ObjectId
+  quizId             String   @db.ObjectId
+  score              Int
+  answers            String
+  completed          DateTime
+  totalQuestions     Int
+  totalPossibleScore Int
+  user               User     @relation(fields: [userId], references: [id])
+  quiz               Quiz     @relation(fields: [quizId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, quizId])
+}
