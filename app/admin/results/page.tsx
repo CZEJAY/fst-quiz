@@ -1,7 +1,8 @@
+import ResultsPage from "@/components/admin/results";
 import React from "react";
 
 const results = () => {
-  return <div>results</div>;
+  return <ResultsPage />;
 };
 
 export default results;

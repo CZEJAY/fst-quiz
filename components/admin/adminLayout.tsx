@@ -18,10 +18,10 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   return (
     <SidebarProvider className="">
-      <div className="flex z-[99999] min-h-screen w-full">
+      <div className="flex  min-h-screen w-full">
         <AppSidebar />
         <SidebarInset>
-          <div className="hidden md:block ">
+          <div className="block z-50">
             <div className="border-b bg-transparent backdrop-blur-sm  w-full">
               <div className="flex h-[4.4rem] items-center px-4 w-full">
                 {/* <MainNav className="mx-6" /> */}

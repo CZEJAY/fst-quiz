@@ -158,11 +158,12 @@ model UserQuizResult {
   completed          DateTime
   totalQuestions     Int
   totalPossibleScore Int
+  attemptNumber      Int      @default(1)
   user               User     @relation(fields: [userId], references: [id])
   quiz               Quiz     @relation(fields: [quizId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([userId, quizId])
+  @@unique([userId, quizId, attemptNumber]) // Updated unique constraint
 }

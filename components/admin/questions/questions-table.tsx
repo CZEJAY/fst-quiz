@@ -232,7 +232,7 @@ export function QuestionsTable({ data }: { data: Question[] }) {
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full">
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter questions..."
@@ -242,7 +242,7 @@ export function QuestionsTable({ data }: { data: Question[] }) {
           onChange={(event) =>
             table.getColumn("question")?.setFilterValue(event.target.value)
           }
-          className="max-w-sm"
+          className=""
         />
       </div>
       <div className="rounded-md border">

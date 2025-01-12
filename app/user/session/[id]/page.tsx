@@ -23,6 +23,7 @@ import { submitQuizResult } from "@/actions/quiz-result-actions";
 import { Progress } from "@/components/ui/progress";
 import { Volume2, VolumeX } from "lucide-react";
 import { Question } from "@prisma/client";
+import QuizTracker from "@/components/user/session/timer";
 
 // Fisher-Yates shuffle algorithm
 function shuffleArray<T>(array: T[]): T[] {
@@ -44,6 +45,8 @@ export default function QuizPage({ params }: { params: { id: string } }) {
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [timerProgress, setTimerProgress] = useState(100);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [attemptNumber, setAttemptNumber] = useState(1);
+
   const router = useRouter();
   const numberOfQuestions = useSearchParams().get("questions") as string;
 
@@ -73,25 +76,21 @@ export default function QuizPage({ params }: { params: { id: string } }) {
     fetchQuiz();
   }, [params.id, numberOfQuestions]);
 
-  const currentQuestion = shuffledQuestions[currentQuestionIndex];
-
+  // Load attempt number on component mount
   useEffect(() => {
-    if (currentQuestion && timeLeft !== null) {
-      const timer = setInterval(() => {
-        setTimeLeft((prevTime) => {
-          if (prevTime === null || prevTime <= 0) {
-            clearInterval(timer);
-            handleNextQuestion();
-            return null;
-          } // @ts-ignore
-          setTimerProgress(((prevTime - 1) / currentQuestion?.timeLimit) * 100);
-          return prevTime - 1;
-        });
-      }, 1000);
+    const loadAttemptNumber = async () => {
+      try {
+        const response = await fetch(`/api/quiz/${params.id}/attempts`);
+        const data = await response.json();
+        setAttemptNumber(data.attemptCount + 1);
+      } catch (error) {
+        console.error("Error loading attempt number:", error);
+      }
+    };
+    loadAttemptNumber();
+  }, [params.id]);
 
-      return () => clearInterval(timer);
-    }
-  }, [currentQuestion, timeLeft]);
+  const currentQuestion = shuffledQuestions[currentQuestionIndex];
 
   const handleSpeakerClick = useCallback(() => {
     if ("speechSynthesis" in window) {
@@ -127,6 +126,10 @@ export default function QuizPage({ params }: { params: { id: string } }) {
       finishQuiz();
     }
   }, [currentQuestionIndex, shuffledQuestions]);
+
+  const handleTimeExpired = useCallback(() => {
+    handleNextQuestion();
+  }, [handleNextQuestion]);
 
   const handlePreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
@@ -167,8 +170,18 @@ export default function QuizPage({ params }: { params: { id: string } }) {
       }
       return {
         questionId: question.id,
-        userAnswer: answers[question.id],
-        correctAnswer: question.correctAnswer,
+        userAnswer:
+          question.type === "multiple-choice"
+            ? `${answers[question.id]} - ${
+                question.options[Number(answers[question.id])]
+              }`
+            : answers[question.id],
+        correctAnswer:
+          question.type === "multiple-choice"
+            ? `${question.correctAnswer} - ${
+                question.options[Number(question.correctAnswer)]
+              }`
+            : question.correctAnswer,
         isCorrect,
         points,
       };
@@ -179,6 +192,7 @@ export default function QuizPage({ params }: { params: { id: string } }) {
       score: totalScore,
       answers: questionResults,
       totalQuestions: shuffledQuestions.length,
+      attemptNumber,
       totalPossibleScore: shuffledQuestions.reduce(
         (acc, q) => acc + q.points,
         0
@@ -192,7 +206,9 @@ export default function QuizPage({ params }: { params: { id: string } }) {
         variant: "destructive",
       });
     } else {
-      router.push(`/user/quiz-result/${result.resultId}`);
+      router.push(
+        `/user/quiz-result/${result.resultId}?attempt=${attemptNumber}`
+      );
     }
   };
 
@@ -265,11 +281,15 @@ export default function QuizPage({ params }: { params: { id: string } }) {
           }`}
         />
         <div className="w-full max-w-3xl mx-auto mb-4">
-          <Progress value={timerProgress} className="w-full" />
-          <p className="text-center mt-2">Time left: {timeLeft} seconds</p>
+          <QuizTracker
+            totalQuestions={shuffledQuestions.length}
+            currentQuestion={currentQuestionIndex + 1}
+            timeLimit={currentQuestion.timeLimit as number}
+            onTimeExpired={handleTimeExpired}
+          />
         </div>
         <Suspense fallback={<QuizSkeleton />}>
-          <Card className="w-full max-w-3xl mx-auto">
+          <Card className="w-full max-w-3xl min-h-[260px] max-h-[270px] mx-auto">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>{currentQuestion.text}</CardTitle>

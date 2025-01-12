@@ -21,12 +21,12 @@ export function TrueFalseQuestion({
       value={currentAnswer?.toString()}
     >
       <div className="flex items-center space-x-2">
-        <RadioGroupItem value="true" id="true" />
-        <Label htmlFor="true">True</Label>
+        <RadioGroupItem value="true" id={`${question.id}-true`} />
+        <Label htmlFor={`${question.id}-true`}>True</Label>
       </div>
       <div className="flex items-center space-x-2">
-        <RadioGroupItem value="false" id="false" />
-        <Label htmlFor="false">False</Label>
+        <RadioGroupItem value="false" id={`${question.id}-false`} />
+        <Label htmlFor={`${question.id}-false`}>False</Label>
       </div>
     </RadioGroup>
   );

@@ -31,7 +31,7 @@ export function AppSidebar() {
               : "text-2xl text-center my-auto font-bold"
           }`}
         >
-          {state === "expanded" ? "FST Quiz" : "FST"}
+          {state === "expanded" ? "Quiz Master" : "QMT"}
         </div>
       </SidebarHeader>
       <SidebarContent>

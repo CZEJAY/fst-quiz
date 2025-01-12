@@ -18,6 +18,7 @@ interface SubmitQuizResultParams {
   answers: QuestionResult[];
   totalQuestions: number;
   totalPossibleScore: number;
+  attemptNumber: number;
 }
 
 export async function submitQuizResult({
@@ -26,6 +27,7 @@ export async function submitQuizResult({
   answers,
   totalQuestions,
   totalPossibleScore,
+  attemptNumber,
 }: SubmitQuizResultParams) {
   try {
     const session = await auth();
@@ -44,6 +46,7 @@ export async function submitQuizResult({
         userId: user.id,
         score,
         totalPossibleScore,
+        attemptNumber,
         totalQuestions,
         answers: JSON.stringify(answers),
         completed: new Date(),

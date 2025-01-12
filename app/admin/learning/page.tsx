@@ -1,7 +1,8 @@
+import LearningPage from "@/components/admin/learning";
 import React from "react";
 
 const learning = () => {
-  return <div>learning</div>;
+  return <LearningPage />;
 };
 
 export default learning;

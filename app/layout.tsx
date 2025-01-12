@@ -22,6 +22,9 @@ export const metadata: Metadata = {
   title: "Quiz Master | JIMEX",
   description:
     "Test your knowledge, challenge your friends, and learn new things with our interactive quizzes.",
+  icons: {
+    icon: "/image.png",
+  },
 };
 
 export default function RootLayout({
@@ -32,7 +35,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} font-mono antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} font-sans  antialiased`}
       >
         <ThemeProvider
           attribute="class"

@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Home, BookOpen, User, BarChart, Bolt } from "lucide-react";
 import { UserNav } from "../admin/user-nav";
+import { ModeToggle } from "../admin/mode-toggle";
 
 const navItems = [
   { icon: Home, label: "Home", path: "/user" },
@@ -33,11 +34,14 @@ export function TopNav() {
       className="md:hidden fixed top-0 left-0 right-0 z-50 shadow-md bg-background border-b border-gray-200 dark:border-gray-800 py-2"
     >
       <div className="flex items-center justify-between w-full px-5 py-1">
-        <div className="flex gap-2 items-center">
-          <Bolt className="bg-primary p-1 rounded-full" size={30} />
+        <div className="flex gap-2 items-center ">
+          <Bolt className="bg-primary p-1 text-black rounded-full" size={30} />
           Quiz Master
         </div>
-        <UserNav />
+        <div className="flex items-center gap-3">
+          <ModeToggle />
+          <UserNav />
+        </div>
       </div>
     </motion.nav>
   );

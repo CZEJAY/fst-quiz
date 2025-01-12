@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { Quiz, UserQuizResult } from "@prisma/client";
+import { Quiz, User, UserQuizResult } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 export type UserResultAndRelation = UserQuizResult & {
@@ -26,6 +26,23 @@ export async function getUserQuizResults() {
     const results = await prisma.userQuizResult.findMany({
       where: { userId: user?.id },
       include: { quiz: true },
+    });
+    return { results };
+  } catch (error) {
+    console.log(error);
+    return { error: "Failed to fetch user quiz results" };
+  }
+}
+
+export type AllResultsAndUsersAndQuiz = UserQuizResult & {
+  quiz: Quiz;
+  user: User;
+};
+
+export async function getAllQuizResults() {
+  try {
+    const results = await prisma.userQuizResult.findMany({
+      include: { quiz: true, user: true },
     });
     return { results };
   } catch (error) {

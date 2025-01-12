@@ -49,7 +49,7 @@ export default async function CategoriesPage() {
     status: category.status,
   }));
   return (
-    <div className="flex-1 space-y-4">
+    <div className="w-full mt-8 space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Categories</h2>
         <CrudBtn />

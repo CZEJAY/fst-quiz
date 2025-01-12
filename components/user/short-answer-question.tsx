@@ -30,9 +30,11 @@ export function ShortAnswerQuestion({
 
   return (
     <div className="space-y-2">
-      <Label htmlFor={`question-${question.id}`}>Your Answer</Label>
+      <Label htmlFor={`question-${question.id}-${question.text}`}>
+        Your Answer
+      </Label>
       <Input
-        id={`question-${question.id}`}
+        id={`question-${question.id}-${question.text}`}
         value={answer}
         onChange={(e) => setAnswer(e.target.value)}
         placeholder="Type your answer here"

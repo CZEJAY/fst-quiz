@@ -79,7 +79,7 @@ const LeaderboardCard = ({ rank, user }: { rank: number; user: User }) => {
 
 const Leaderboard = ({ users }: { users: User[] }) => {
   return (
-    <Card className="w-full">
+    <Card className="w-full mt-5">
       <CardHeader>
         <CardTitle className="text-2xl">Leaderboard</CardTitle>
       </CardHeader>

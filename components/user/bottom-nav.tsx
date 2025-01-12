@@ -38,7 +38,7 @@ export function BottomNav() {
               onClick={() => router.push(item.path)}
               className={`flex flex-col items-center p-2 ${
                 pathname === item.path
-                  ? "text-primary"
+                  ? "text-black bg-primary rounded-md "
                   : "text-gray-500 dark:text-gray-400"
               }`}
             >

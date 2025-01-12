@@ -38,6 +38,7 @@ import { toast } from "sonner";
 import { createQuestion, updateQuestion } from "@/actions/question-actions";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { ExcelUploadModal } from "@/components/mods/excel-upload-modal";
 
 const QuestionType = z.enum(["multiple-choice", "short-answer", "true-false"]);
 const QuestionDifficulty = z.enum(["easy", "medium", "hard"]);
@@ -65,7 +66,7 @@ const baseQuestionSchema = z.object({
 const multipleChoiceSchema = baseQuestionSchema.extend({
   type: z.literal("multiple-choice"),
   options: z.array(z.string()).min(4).max(4),
-  correctAnswer: z.string().min(1, "Correct option is required"),
+  correctOption: z.number().min(0).max(3),
 });
 
 const trueFalseSchema = baseQuestionSchema.extend({
@@ -113,6 +114,7 @@ export function CreateQuestionForm({
   });
 
   const questionType = form.watch("type");
+  const selectedQuizId = form.watch("quizId");
 
   const router = useRouter();
 
@@ -129,9 +131,8 @@ export function CreateQuestionForm({
     try {
       setIsSubmitting(true);
 
-      const action = initialData
-        ? // @ts-ignore
-          updateQuestion(initialData.id, values) // @ts-ignore
+      const action = initialData //@ts-ignore
+        ? updateQuestion(initialData.id, values) //@ts-ignore
         : createQuestion(values);
       console.log(values);
       const { question, error } = await action;
@@ -164,6 +165,10 @@ export function CreateQuestionForm({
     }
   }
 
+  const handleUploadComplete = () => {
+    router.refresh();
+  };
+
   return (
     <Card className="w-full max-w-3xl mx-auto">
       <CardHeader>
@@ -173,10 +178,16 @@ export function CreateQuestionForm({
         <CardDescription>
           {initialData
             ? "Edit the question details below."
-            : "Fill in the details to create a new question."}
+            : "Fill in the details to create a new question or upload questions from an Excel file."}
         </CardDescription>
       </CardHeader>
       <CardContent>
+        <div className="mb-6">
+          <ExcelUploadModal
+            quizzes={quizzes}
+            onUploadComplete={handleUploadComplete}
+          />
+        </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -298,10 +309,12 @@ export function CreateQuestionForm({
                             className="flex items-center space-x-2"
                           >
                             <RadioGroupItem
-                              value={option}
-                              checked={form.watch("correctAnswer") === option}
+                              value={option.toString()}
+                              checked={
+                                form.watch("correctAnswer") === index.toString()
+                              }
                               onClick={() =>
-                                form.setValue("correctAnswer", option)
+                                form.setValue("correctAnswer", index.toString())
                               }
                               disabled={isSubmitting}
                             />
@@ -325,58 +338,58 @@ export function CreateQuestionForm({
               />
             )}
             {/* <FormField
-              control={form.control}
-              name="difficulty"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Difficulty</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select difficulty" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="easy">Easy</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="hard">Hard</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
+                          control={form.control}
+                          name="difficulty"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Difficulty</FormLabel>
+                              <Select
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                              >
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select difficulty" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="easy">Easy</SelectItem>
+                                  <SelectItem value="medium">Medium</SelectItem>
+                                  <SelectItem value="hard">Hard</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        /> */}
             {/* <FormField
-              control={form.control}
-              name="categoryId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      disabled={isSubmitting}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category.id} value={category.id}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
+                          control={form.control}
+                          name="categoryId"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Category</FormLabel>
+                              <FormControl>
+                                <Select
+                                  onValueChange={field.onChange}
+                                  defaultValue={field.value}
+                                  disabled={isSubmitting}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select a category" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {categories.map((category) => (
+                                      <SelectItem key={category.id} value={category.id}>
+                                        {category.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        /> */}
             <FormField
               control={form.control}
               name="quizId"
@@ -484,6 +497,7 @@ export function CreateQuestionForm({
                 )}
               />
             </div>
+
             <Button disabled={isSubmitting} type="submit" className="w-full">
               {isSubmitting ? "Saving..." : initialData ? "Update" : "Create"}
             </Button>
