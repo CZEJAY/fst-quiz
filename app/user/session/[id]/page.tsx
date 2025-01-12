@@ -20,10 +20,10 @@ import { QuizSkeleton } from "@/components/user/quiz-skeleton";
 import { toast } from "@/hooks/use-toast";
 import { getQuizById, QuizWithRelationsAndUser } from "@/actions/quiz-actions";
 import { submitQuizResult } from "@/actions/quiz-result-actions";
-import { Progress } from "@/components/ui/progress";
 import { Volume2, VolumeX } from "lucide-react";
 import { Question } from "@prisma/client";
 import QuizTracker from "@/components/user/session/timer";
+import { SubmitQuizModal } from "@/components/mods/submit-quiz-modal";
 
 // Fisher-Yates shuffle algorithm
 function shuffleArray<T>(array: T[]): T[] {
@@ -46,6 +46,8 @@ export default function QuizPage({ params }: { params: { id: string } }) {
   const [timerProgress, setTimerProgress] = useState(100);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [attemptNumber, setAttemptNumber] = useState(1);
+  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const router = useRouter();
   const numberOfQuestions = useSearchParams().get("questions") as string;
@@ -65,7 +67,8 @@ export default function QuizPage({ params }: { params: { id: string } }) {
         });
       } else {
         // @ts-ignore
-        setQuiz(quiz); // @ts-ignore
+        setQuiz(quiz);
+        // @ts-ignore
         const shuffled = shuffleArray(quiz.questions);
         setShuffledQuestions(shuffled);
         setTimeLeft(shuffled[0].timeLimit);
@@ -113,7 +116,6 @@ export default function QuizPage({ params }: { params: { id: string } }) {
   }, [currentQuestion, isSpeaking]);
 
   const handleAnswer = (answer: any) => {
-    console.log(answer);
     setAnswers((prev) => ({ ...prev, [currentQuestion.id]: answer }));
   };
 
@@ -123,13 +125,17 @@ export default function QuizPage({ params }: { params: { id: string } }) {
       setTimeLeft(shuffledQuestions[currentQuestionIndex + 1]?.timeLimit);
       setTimerProgress(100);
     } else {
-      finishQuiz();
+      setIsSubmitModalOpen(true);
     }
   }, [currentQuestionIndex, shuffledQuestions]);
 
   const handleTimeExpired = useCallback(() => {
-    handleNextQuestion();
-  }, [handleNextQuestion]);
+    if (currentQuestionIndex < shuffledQuestions.length - 1) {
+      handleNextQuestion();
+    } else {
+      setIsSubmitModalOpen(true);
+    }
+  }, [currentQuestionIndex, shuffledQuestions, handleNextQuestion]);
 
   const handlePreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
@@ -146,22 +152,23 @@ export default function QuizPage({ params }: { params: { id: string } }) {
   };
 
   const finishQuiz = async () => {
+    setIsSubmitting(true);
     let totalScore = 0;
     const questionResults = shuffledQuestions.map((question) => {
       let isCorrect = false;
       let points = 0;
+      const userAnswer = answers[question.id];
       switch (question.type) {
         case "multiple-choice":
-          isCorrect = answers[question.id] === question.correctAnswer;
+          isCorrect = userAnswer === question.correctAnswer;
           break;
         case "short-answer":
           isCorrect =
-            answers[question.id]?.toLowerCase().trim() ===
+            userAnswer?.toLowerCase().trim() ===
             question.correctAnswer.toLowerCase().trim();
           break;
         case "true-false":
-          isCorrect =
-            answers[question.id]?.toString() === question.correctAnswer;
+          isCorrect = userAnswer?.toString() === question.correctAnswer;
           break;
       }
       if (isCorrect) {
@@ -172,10 +179,8 @@ export default function QuizPage({ params }: { params: { id: string } }) {
         questionId: question.id,
         userAnswer:
           question.type === "multiple-choice"
-            ? `${answers[question.id]} - ${
-                question.options[Number(answers[question.id])]
-              }`
-            : answers[question.id],
+            ? `${userAnswer} - ${question.options[Number(userAnswer)]}`
+            : userAnswer,
         correctAnswer:
           question.type === "multiple-choice"
             ? `${question.correctAnswer} - ${
@@ -198,6 +203,8 @@ export default function QuizPage({ params }: { params: { id: string } }) {
         0
       ),
     });
+
+    setIsSubmitting(false);
 
     if (result.error) {
       toast({
@@ -335,6 +342,12 @@ export default function QuizPage({ params }: { params: { id: string } }) {
           onNavigate={handleNavigate}
         />
       </div>
+      <SubmitQuizModal
+        isOpen={isSubmitModalOpen}
+        onClose={() => setIsSubmitModalOpen(false)}
+        onSubmit={finishQuiz}
+        isSubmitting={isSubmitting}
+      />
     </div>
   );
 }
