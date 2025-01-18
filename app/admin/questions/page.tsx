@@ -9,6 +9,8 @@ import {
 import React from "react";
 import CreateQuestion from "./_components/create-question";
 
+export const dynamic = "force-dynamic";
+
 const page = async () => {
   // @ts-ignore
   const { error, questions } = await getQuestions();

@@ -153,6 +153,7 @@ export function CreateQuestionForm({
           }
         );
         router.push("/admin/questions");
+        router.refresh();
       }
     } catch (error) {
       console.log("Question operation failed:", error);

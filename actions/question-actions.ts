@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { Category, Question, Quiz } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { unstable_noStore as noStore } from "next/cache";
 
 export type QuestionWithRelations = Question & {
   quiz: Quiz & {
@@ -12,6 +13,7 @@ export type QuestionWithRelations = Question & {
 export async function getQuestions(): Promise<
   { questions: QuestionWithRelations[] } | { error: string }
 > {
+  noStore();
   try {
     const questions = await prisma.question.findMany({
       include: {
@@ -53,7 +55,7 @@ export async function createQuestion(data: {
 }) {
   try {
     const question = await prisma.question.create({ data });
-    revalidatePath(`/questions`);
+    revalidatePath(`/admin/questions`);
     return { question };
   } catch (error) {
     console.log(error);

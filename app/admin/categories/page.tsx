@@ -7,6 +7,8 @@ import CrudBtn from "@/components/admin/category/CrudBtn";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function CategoriesPage() {
   const { categories, error } = await getCategories();
   if (error) {
